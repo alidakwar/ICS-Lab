@@ -63,13 +63,13 @@ This project highlights key OT security concepts including network segmentation,
 
 ## Tech Stack
 
-- :contentReference[oaicite:0]{index=0}
-- :contentReference[oaicite:1]{index=1}
-- :contentReference[oaicite:2]{index=2}
+- VirtualBox
+- pfSense
+- Ubuntu Server
 - Python
-- :contentReference[oaicite:3]{index=3}
-- :contentReference[oaicite:4]{index=4}
-- :contentReference[oaicite:5]{index=5}
+- Wireshark
+- Zeek
+- Suricata
 - Modbus/TCP
 - OPC UA
 
@@ -133,7 +133,7 @@ This project highlights key OT security concepts including network segmentation,
 ## Future Improvements
 
 - Deploy a real OPC UA server and client
-- Integrate logs into :contentReference[oaicite:6]{index=6} or the :contentReference[oaicite:7]{index=7}
-- Map findings to :contentReference[oaicite:8]{index=8}/IEC 62443 controls
+- Integrate logs into Splunk or the ELK Stack
+- Map findings to ISA/IEC 62443 controls
 - Simulate ransomware or unauthorized engineering workstation access
 - Add historian and engineering workstation components
