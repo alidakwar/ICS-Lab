@@ -14,11 +14,11 @@
 
 ## Overview
 
-ICS Security Lab is a simulated Industrial Control System (ICS) cybersecurity environment designed to model real-world Operational Technology (OT) networks using a simplified Purdue Model architecture (Levels 0–3).
+ICS Security Lab is a simulated Industrial Control System (ICS) cybersecurity environment designed to model Operational Technology (OT) networks using a simplified Purdue Model architecture.
 
-The lab demonstrates how industrial environments can be segmented, monitored, and defended against unauthorized access, lateral movement, and insecure protocol activity. Separate zones were created using VLANs and firewall rules to enforce controlled communication paths between operations, SCADA/HMI, and controller networks.
+The lab uses pfSense to segment Level 1–3 assets into separate security zones and enforces controlled communication paths between the HMI and PLC networks. Industrial traffic is generated using Modbus/TCP and analyzed with Wireshark, Zeek, and Suricata to demonstrate how common OT protocols can be monitored and secured.
 
-The project also focuses on threat visibility and detection using Wireshark, Zeek, and Suricata while assessing common industrial protocols such as Modbus/TCP and OPC UA.
+This project highlights key OT security concepts including network segmentation, protocol visibility, intrusion detection, and compensating controls for inherently insecure industrial protocols.
 
 ---
 
@@ -26,98 +26,114 @@ The project also focuses on threat visibility and detection using Wireshark, Zee
 
 ### Purdue Model Zones
 
-- **Level 3:** Operations / Management Workstation  
-- **Level 2:** SCADA / HMI Systems  
-- **Level 1:** PLC / Controller Simulation  
-- **Level 0:** Simulated Sensors / Process Values  
-- **Monitoring Zone:** Security Monitoring / IDS Sensors  
+- **Level 3:** Operations / Management Workstation
+- **Level 2:** SCADA / HMI Workstation
+- **Level 1:** PLC / Controller Simulation
+- **Level 0:** Simulated Process Values
+- **Monitoring Zone:** Security Monitoring and IDS
+
+### Network Layout
+
+- **Level 3:** `10.10.3.0/24`
+- **Level 2 (HMI):** `10.10.2.0/24`
+- **Level 1 (PLC):** `10.10.1.0/24`
 
 ### Security Controls
 
-- VLAN-based network segmentation  
-- Firewall rules controlling east-west traffic  
-- Restricted communication paths between levels  
-- IDS monitoring across OT zones  
+- Default deny between zones
+- Allow HMI → PLC on Modbus/TCP
+- Allow administrative SSH access only where required
+- Block unauthorized inter-zone traffic
+- Suricata rules to detect Modbus write operations
 
 ---
 
 ## Features
 
-- Segmented OT zones (Level 0–3)
-- Purdue Model network design
-- VLAN + firewall isolation
-- Modbus/TCP traffic inspection
-- OPC UA protocol analysis
-- Zeek network telemetry
-- Suricata intrusion detection
-- Wireshark packet capture and analysis
-- Simulated lateral movement testing
-- Security hardening recommendations
+- Simulated ICS environment based on the Purdue Model
+- pfSense firewall segmentation between Level 1–3 networks
+- Modbus/TCP server and client for industrial traffic generation
+- Wireshark packet inspection
+- Zeek network metadata collection
+- Suricata intrusion detection with custom Modbus rules
+- Security assessment of Modbus/TCP and OPC UA
+- Validation of allowed and blocked communication paths
 
 ---
 
 ## Tech Stack
 
-- VirtualBox / VMware
-- pfSense
-- Kali Linux
-- Ubuntu Server
+- :contentReference[oaicite:0]{index=0}
+- :contentReference[oaicite:1]{index=1}
+- :contentReference[oaicite:2]{index=2}
 - Python
-- Wireshark
-- Zeek
-- Suricata
-- Modbus tools
-- OPC UA simulation tools
+- :contentReference[oaicite:3]{index=3}
+- :contentReference[oaicite:4]{index=4}
+- :contentReference[oaicite:5]{index=5}
+- Modbus/TCP
+- OPC UA
 
 ---
 
 ## Key Findings
 
-- Plaintext Modbus commands can be observed without encryption
-- Flat networks increase risk of lateral movement
-- VLAN + firewall segmentation reduces unauthorized access paths
-- Suricata successfully detected suspicious scans and probes
-- Zeek provided valuable metadata for traffic visibility
-- ICS protocols require compensating security controls
+- Modbus/TCP communications were transmitted in plaintext and could be fully inspected in packet captures.
+- Firewall segmentation prevented unauthorized direct communication between OT zones.
+- Suricata detected Modbus Function Code 6 (Write Single Register) using a custom protocol-aware rule.
+- Zeek `conn.log` provided visibility into allowed and denied connections across segmented networks.
+- OT protocols require compensating controls such as segmentation and monitoring because many lack native security.
 
 ---
 
 ## Screenshots
 
-_Add screenshots here_
+### Architecture
+- Purdue Model network diagram
+- VirtualBox network configuration
 
-Examples:
+### Segmentation
+- pfSense interface assignments
+- Firewall rules allowing HMI → PLC communication
+- Blocked connection attempts
 
-- Network topology diagram
-- VLAN / firewall rules
+### Monitoring
 - Wireshark Modbus packet capture
-- Suricata alerts
-- Zeek logs
-- SCADA / HMI simulation
+- Zeek `conn.log`
+- Suricata alert for Modbus write activity
 
 ---
 
 ## How to Run
 
-1. Build virtual machines for each Purdue level
-2. Configure VLANs and routing/firewall rules
-3. Deploy SCADA / PLC simulation tools
-4. Install Zeek and Suricata sensors
-5. Generate normal and suspicious traffic
-6. Capture and analyze packets with Wireshark
-7. Review alerts and document findings
+1. Create four virtual machines:
+   - pfSense firewall/router
+   - HMI workstation
+   - PLC simulation server
+   - Monitoring server
+
+2. Configure internal networks:
+   - `10.10.3.0/24` (Level 3)
+   - `10.10.2.0/24` (HMI)
+   - `10.10.1.0/24` (PLC)
+
+3. Configure pfSense interfaces and firewall rules.
+
+4. Deploy a Modbus/TCP server on the PLC VM.
+
+5. Run a Python-based Modbus client from the HMI VM.
+
+6. Capture traffic with Wireshark.
+
+7. Monitor connections with Zeek.
+
+8. Detect suspicious activity with Suricata.
 
 ---
 
 ## Future Improvements
 
-- Add Splunk or ELK SIEM integration
-- Simulate ransomware impact on OT networks
-- Implement Zero Trust segmentation
-- Add Active Directory environment
-- Expand to IEC 62443 mapped controls
-- Create attack detection playbooks
-- Add cloud-connected industrial asset monitoring
-
----
-```
+- Deploy a real OPC UA server and client
+- Integrate logs into :contentReference[oaicite:6]{index=6} or the :contentReference[oaicite:7]{index=7}
+- Map findings to :contentReference[oaicite:8]{index=8}/IEC 62443 controls
+- Simulate ransomware or unauthorized engineering workstation access
+- Add historian and engineering workstation components
